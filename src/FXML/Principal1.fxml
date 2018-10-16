@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="401.0" prefWidth="619.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.ControllerPrincipal">
+   <center>
+      <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+        <tabs>
+          <Tab text="Conectar">
+               <content>
+                  <BorderPane prefHeight="200.0" prefWidth="200.0">
+                     <top>
+                        <Label text="Conéctate y recibe datos" BorderPane.alignment="CENTER">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                        </Label>
+                     </top>
+                     <center>
+                        <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+                           <children>
+                              <StackPane prefHeight="30.0" prefWidth="600.0">
+                                 <children>
+                                    <Label text="Recibe datos por puerto serial" />
+                                 </children>
+                              </StackPane>
+                              <StackPane prefHeight="82.0" prefWidth="600.0">
+                                 <children>
+                                    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="12.0">
+                                       <children>
+                                          <ComboBox fx:id="cbCaja" prefWidth="150.0" promptText="Puertos" />
+                                          <Button fx:id="btnConectar" mnemonicParsing="false" onAction="#ConectarArduino" text="Conectar" />
+                                          <Button fx:id="btnDesconectar" mnemonicParsing="false" onAction="#DesconectarArduino" text="Desconectar" />
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </StackPane>
+                              <TextArea fx:id="txtVista" editable="false" prefHeight="200.0" prefWidth="200.0" promptText="Mensajes de arduino" VBox.vgrow="ALWAYS" />
+                           </children>
+                        </VBox>
+                     </center>
+                  </BorderPane>
+               </content>
+          </Tab>
+          <Tab text="Datos">
+               <content>
+                  <BorderPane prefHeight="200.0" prefWidth="200.0">
+                     <top>
+                        <Label text="Datos recibidos " BorderPane.alignment="CENTER">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                        </Label>
+                     </top>
+                     <center>
+                        <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+                           <children>
+                              <HBox alignment="CENTER" prefHeight="49.0" prefWidth="600.0" spacing="4.0">
+                                 <children>
+                                    <DatePicker fx:id="dtInicial" promptText="Elige una fecha" />
+                                    <Label text="- A - ">
+                                       <font>
+                                          <Font size="13.0" />
+                                       </font>
+                                    </Label>
+                                    <DatePicker fx:id="dtFinal" promptText="Elige una fecha" />
+                                    <Button fx:id="btnMostrar" mnemonicParsing="false" text="Mostrar" />
+                                 </children>
+                              </HBox>
+                              <TableView fx:id="tvTabla" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                           </children></VBox>
+                     </center></BorderPane>
+               </content>
+          </Tab>
+            <Tab text="Graficas">
+               <content>
+                  <BorderPane prefHeight="200.0" prefWidth="200.0">
+                     <top>
+                        <Label text="Humedad del suelo" BorderPane.alignment="CENTER">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                     </top>
+                     <center>
+                        <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+                           <children>
+                              <HBox alignment="CENTER" prefHeight="78.0" prefWidth="619.0" spacing="5.0">
+                                 <children>
+                                    <DatePicker promptText="Elige una fecha" />
+                                    <Label text=" - A - " />
+                                    <DatePicker promptText="Elige una fecha" />
+                                    <ComboBox fx:id="cbxTiempo" prefWidth="150.0" promptText="Tiempo" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </center>
+                  </BorderPane>
+               </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+   </center>
+   <bottom>
+      <StackPane prefHeight="41.0" prefWidth="600.0" BorderPane.alignment="CENTER">
+         <children>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Label text="Estatus de errores :  ">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="lblEstatusError" lineSpacing="9.0" text="Ninguno">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Label text=" | ">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+                  <Label text="Estatus : ">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="lblEstatus" text="Ninguno">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+               </children>
+            </HBox>
+         </children>
+      </StackPane>
+   </bottom>
+</BorderPane>
