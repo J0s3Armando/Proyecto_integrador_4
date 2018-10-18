@@ -17,6 +17,7 @@ public class Principal extends Application{
     public void start(Stage primaryStage) throws Exception {
        Parent ventana=FXMLLoader.load(getClass().getResource("/FXML/Principal1.fxml"));
        Scene window = new Scene(ventana);
+       primaryStage.setTitle("Proyecto integrador 1.0");
        primaryStage.setScene(window);
        primaryStage.show();
     }

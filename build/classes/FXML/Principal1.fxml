@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.chart.*?>
 <?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import java.util.*?>
@@ -69,15 +70,10 @@
                                        </font>
                                     </Label>
                                     <DatePicker fx:id="dtFinal" promptText="Elige una fecha" />
-                                    <Button fx:id="btnMostrar" mnemonicParsing="false" text="Mostrar" />
+                                    <Button fx:id="btnMostrar" mnemonicParsing="false" onAction="#Resultados" text="Mostrar" />
                                  </children>
                               </HBox>
-                              <TableView fx:id="tvTabla" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-                                <columns>
-                                  <TableColumn prefWidth="75.0" text="C1" />
-                                  <TableColumn prefWidth="75.0" text="C2" />
-                                </columns>
-                              </TableView>
+                              <TableView fx:id="tvTabla" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
                            </children></VBox>
                      </center></BorderPane>
                </content>
@@ -97,12 +93,20 @@
                            <children>
                               <HBox alignment="CENTER" prefHeight="78.0" prefWidth="619.0" spacing="5.0">
                                  <children>
-                                    <DatePicker />
+                                    <DatePicker promptText="Elige una fecha" />
                                     <Label text=" - A - " />
-                                    <DatePicker />
+                                    <DatePicker promptText="Elige una fecha" />
                                     <ComboBox fx:id="cbxTiempo" prefWidth="150.0" promptText="Tiempo" />
                                  </children>
                               </HBox>
+                              <LineChart fx:id="lcGrafica" title="Humedad " VBox.vgrow="ALWAYS">
+                                <xAxis>
+                                  <CategoryAxis side="BOTTOM" />
+                                </xAxis>
+                                <yAxis>
+                                  <NumberAxis side="LEFT" />
+                                </yAxis>
+                              </LineChart>
                            </children>
                         </VBox>
                      </center>

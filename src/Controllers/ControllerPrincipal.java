@@ -1,9 +1,12 @@
-
+ 
 package Controllers;
 
 import com.panamahitek.ArduinoException;
 import com.panamahitek.PanamaHitek_Arduino;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -64,6 +67,7 @@ public class ControllerPrincipal implements Initializable{
     ObservableList<String> ls =null;
     ObservableList<String> time= FXCollections.observableArrayList("1 hora","2 horas", "5 horas","1 día");
     
+    //escucha las acciones de arduuino
     SerialPortEventListener escucha = new SerialPortEventListener() {
 
         @Override
@@ -82,14 +86,14 @@ public class ControllerPrincipal implements Initializable{
                 lblEstatusError.setText("Fallo del la conexion con arduino");   
                 }
         }
-    };
+    }; 
     
-    private void MostrarMensaje(String msg)
+    private void MostrarMensaje(String msg) //muestra los datos recibidos en un panel
     {
         txtVista.appendText(msg+"\n");
     }
     
-    private void MostrarPuertos()
+    private void MostrarPuertos() //muestra los puertos conectados
     {
         ls=FXCollections.observableArrayList();
         String[] portName = SerialPortList.getPortNames();
@@ -100,7 +104,7 @@ public class ControllerPrincipal implements Initializable{
         cbCaja.itemsProperty().setValue(ls);
     }
     
-    @FXML
+    @FXML //efectua la conexion con arduino
     private void ConectarArduino(ActionEvent event) {
         try 
         {
@@ -121,7 +125,7 @@ public class ControllerPrincipal implements Initializable{
         }
     }
 
-    @FXML
+    @FXML //desabilita la conexion con arduino
     private void DesconectarArduino(ActionEvent event) {
         try 
         {
@@ -136,8 +140,38 @@ public class ControllerPrincipal implements Initializable{
             lblEstatusError.setText("Fallo al desconectar la conecxión");
         }
     }
+    
+    @FXML
+    private void Resultados()
+    {
+        //String pattern="dd/MM/yyyy";
+        //DateTimeFormatter d= DateTimeFormatter.ofPattern(pattern);
+        //lblEstatusError.setText(dtInicial.getValue().format(d));
+        LocalDate fechaInicio= dtInicial.getValue();
+        LocalDate fechaFinal=dtFinal.getValue();
+        if(fechaInicio==null || fechaFinal==null)
+        {
+            System.out.println("NO HAS SELECCIONADO UNA DE LAS OPCIONES DEL CALENDARIO");
+        }
+        else if( fechaInicio.isBefore(fechaFinal))
+        {
+            //fechaInicio es menor a la fecha 2
+            DateTimeFormatter dt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            System.out.println("La primera fecha " + dtInicial.getValue().format(dt)+ " es menor que "+ dtFinal.getValue().format(dt));
+        }
+        else if(fechaInicio.isAfter(fechaFinal))
+        {
+            //fechaInicio es > a la primera fecha
+            DateTimeFormatter dt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            System.out.println("La primera fecha " + dtInicial.getValue().format(dt)+ "es mayor que "+ dtFinal.getValue().format(dt));
+        }
+        else{
+            DateTimeFormatter dt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            System.out.println("La primera fecha " + dtInicial.getValue().format(dt)+ "es igual que "+ dtFinal.getValue().format(dt));
+        }
+    }
 
-    @Override
+    @Override 
     public void initialize(URL location, ResourceBundle resources) {
         MostrarPuertos();
         btnDesconectar.setDisable(true);
