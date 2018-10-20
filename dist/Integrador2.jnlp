@@ -8,8 +8,9 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="Integrador2.jar" size="7481" download="eager" />
+    <jar href="Integrador2.jar" size="9924" download="eager" />
     <jar href="lib\PanamaHitek_Arduino-3.0.0.jar" size="197798" download="eager" />
+    <jar href="lib\ojdbc6.jar" size="1988051" download="eager" />
   </resources>
   <applet-desc  width="800" height="600" main-class="com.javafx.main.NoJavaFXFallback"  name="Integrador2" >
     <param name="requiredFXVersion" value="8.0+"/>

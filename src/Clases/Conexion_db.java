@@ -9,28 +9,25 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Calendar;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.scene.control.TableView;
 
 public class Conexion_db 
 {
-  //declaracion de variables para la conexion
-  Connection conexion;
-  Statement sen;
-  ResultSet res;
   
   public Conexion_db()
   {
-      conexion=null;
+      
   }
   
-  public void conectar() throws ClassNotFoundException, SQLException {
-    Class.forName("oracle.jdbc.driver.OracleDriver");
-    conexion = DriverManager.getConnection("jdbc:oracle:thin:@localhost:127.0.0.1:XE", "system", "GB3102JS9801");      
+  public static Connection getConnection() throws ClassNotFoundException, SQLException {
+    //Class.forName("oracle.jdbc.driver.OracleDriver");
+    DriverManager.registerDriver( new oracle.jdbc.driver.OracleDriver() );
+    Connection conexion = DriverManager.getConnection("jdbc:oracle:thin:@127.0.0.1:1521:XE","system","GB3102JS9801"); 
+    return conexion;
   }
   
-  public void Consultar(String fecha1, String fecha2, int id)
-{
+  
    
-    
-}
-        
 }

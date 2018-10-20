@@ -1,9 +1,17 @@
  
 package Controllers;
 
+import Clases.Conexion_db;
+import Clases.MensajeAlerta;
+import Clases.Tabla;
 import com.panamahitek.ArduinoException;
 import com.panamahitek.PanamaHitek_Arduino;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -15,16 +23,22 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.StageStyle;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
 import jssc.SerialPortList;
+
 
 
 public class ControllerPrincipal implements Initializable{
@@ -42,10 +56,6 @@ public class ControllerPrincipal implements Initializable{
 
     @FXML
     private ComboBox<String> cbxTiempo;
-
-    @FXML
-    private TableView<String> tvTabla;
-
     @FXML
     private Label lblEstatusError;
 
@@ -61,11 +71,27 @@ public class ControllerPrincipal implements Initializable{
     @FXML
     private TextArea txtVista;
     
+    //para el llenado de las tablas en la base de datos
+    @FXML
+    private TableView<Tabla> tvTabla;
+    @FXML
+    private TableColumn<Tabla, String> col_id;
+    @FXML
+    private TableColumn<Tabla, String> col_fecha;
+    @FXML
+    private TableColumn<Tabla, String> col_hora;
+    @FXML
+    private TableColumn<Tabla, String> col_descripcion;
+    
+    MensajeAlerta al = new MensajeAlerta("Erro de conexión","Ha ocurrido un error con la conexión del servidor...Intete otra vez");
     //declaración de variables a utlilizar
     PanamaHitek_Arduino ino = new PanamaHitek_Arduino();
     
     ObservableList<String> ls =null;
     ObservableList<String> time= FXCollections.observableArrayList("1 hora","2 horas", "5 horas","1 día");
+    ObservableList<Tabla> data = FXCollections.observableArrayList();
+    //CONEXION DE LA BASE DE DATOS
+    Connection conn =null;
     
     //escucha las acciones de arduuino
     SerialPortEventListener escucha = new SerialPortEventListener() {
@@ -111,6 +137,7 @@ public class ControllerPrincipal implements Initializable{
             ino.arduinoRX(cbCaja.getValue(), 9600, escucha);
             btnConectar.setDisable(true);
             btnDesconectar.setDisable(false);
+            lblEstatus.setText("Conectado");
         } catch (ArduinoException ex) {
             btnConectar.setDisable(true);
             btnDesconectar.setDisable(false);
@@ -132,6 +159,7 @@ public class ControllerPrincipal implements Initializable{
             ino.killArduinoConnection();
             btnConectar.setDisable(false);
             btnDesconectar.setDisable(true);
+            lblEstatus.setText("Desconectado");
         } catch (ArduinoException ex) 
         {
             btnConectar.setDisable(true);
@@ -151,30 +179,85 @@ public class ControllerPrincipal implements Initializable{
         LocalDate fechaFinal=dtFinal.getValue();
         if(fechaInicio==null || fechaFinal==null)
         {
-            System.out.println("NO HAS SELECCIONADO UNA DE LAS OPCIONES DEL CALENDARIO");
+            MensajeAlerta ms= new MensajeAlerta("Error de fecha","No has elegido una o ambas fechas...Ingrese una combinación de fechas válida");
+            ms.MostrarMensaje();
         }
         else if( fechaInicio.isBefore(fechaFinal))
         {
-            //fechaInicio es menor a la fecha 2
-            DateTimeFormatter dt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            System.out.println("La primera fecha " + dtInicial.getValue().format(dt)+ " es menor que "+ dtFinal.getValue().format(dt));
+            try {
+                //fechaInicio es menor a la fecha2                              
+                //ResultSet rs =conn.createStatement().executeQuery("SELECT*FROM PRUEBA WHERE fecha BETWEEN '"
+                //+dtInicial.getValue().toString()+"' AND '"+dtFinal.getValue().toString()+"';" );
+                //ResultSet rs = conn.createStatement().executeQuery("SELECT * FROM PRUEBA;");
+                data=null;
+                tvTabla=null;
+                 Statement sentencia = conn.createStatement();
+                 ResultSet resultado = sentencia.executeQuery( "SELECT * FROM PRUEBA" );
+                while(resultado.next())
+                {
+                    data.add(new Tabla(resultado.getString("id"),resultado.getString("fecha")
+                    ,resultado.getString("hora"),resultado.getString("descripcion")));
+                                    
+                }
+                tvTabla.setItems(data);
+                //sentencia.close();
+               
+                col_id.setCellValueFactory(new PropertyValueFactory("id"));
+                col_fecha.setCellValueFactory(new PropertyValueFactory("fecha"));
+                col_hora.setCellValueFactory(new PropertyValueFactory("hora"));
+                col_descripcion.setCellValueFactory(new PropertyValueFactory("descripcion"));
+                
+            } catch (SQLException ex) 
+            {
+               al.MostrarMensaje();
+            } 
         }
         else if(fechaInicio.isAfter(fechaFinal))
         {
             //fechaInicio es > a la primera fecha
-            DateTimeFormatter dt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            System.out.println("La primera fecha " + dtInicial.getValue().format(dt)+ "es mayor que "+ dtFinal.getValue().format(dt));
+            MensajeAlerta mg = new MensajeAlerta("Error de fecha","La combinación de fechas debe ser cronológica o iguales...");
+            mg.MostrarMensaje();
         }
         else{
-            DateTimeFormatter dt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-            System.out.println("La primera fecha " + dtInicial.getValue().format(dt)+ "es igual que "+ dtFinal.getValue().format(dt));
+                
+            try {
+                data=null;
+                tvTabla=null;
+                Statement sentencia = conn.createStatement();
+                ResultSet resultado = sentencia.executeQuery( "SELECT * FROM PRUEBA" );
+                while(resultado.next())
+                {
+                    data.add(new Tabla(resultado.getString("id"),resultado.getString("fecha")
+                    ,resultado.getString("hora"),resultado.getString("descripcion")));
+                                    
+                }
+                tvTabla.setItems(data);
+                //sentencia.close();
+               
+                col_id.setCellValueFactory(new PropertyValueFactory("id"));
+                col_fecha.setCellValueFactory(new PropertyValueFactory("fecha"));
+                col_hora.setCellValueFactory(new PropertyValueFactory("hora"));
+                col_descripcion.setCellValueFactory(new PropertyValueFactory("descripcion"));
+            } catch (SQLException ex) {
+               
+               al.MostrarMensaje();               
+            } 
         }
+        
     }
 
     @Override 
     public void initialize(URL location, ResourceBundle resources) {
         MostrarPuertos();
         btnDesconectar.setDisable(true);
+        try {
+            conn=Conexion_db.getConnection();
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(ControllerPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(ControllerPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+        }
         cbxTiempo.itemsProperty().setValue(time);
+        
     }
 }
