@@ -12,9 +12,11 @@ import java.sql.ResultSet;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -70,20 +72,22 @@ public class ControllerPrincipal implements Initializable{
 
     @FXML
     private TextArea txtVista;
+    @FXML
+    private Button btnGraficar;
     
     //para el llenado de las tablas en la base de datos
     @FXML
-    private TableView<Tabla> tvTabla;
+    private TableView tvTabla;
     @FXML
-    private TableColumn<Tabla, String> col_id;
+    private TableColumn<Tabla, Integer> col_id;
     @FXML
     private TableColumn<Tabla, String> col_fecha;
     @FXML
     private TableColumn<Tabla, String> col_hora;
     @FXML
-    private TableColumn<Tabla, String> col_descripcion;
+    private TableColumn<Tabla, Float> col_humedad;
     
-    MensajeAlerta al = new MensajeAlerta("Erro de conexión","Ha ocurrido un error con la conexión del servidor...Intete otra vez");
+    MensajeAlerta al = new MensajeAlerta("Erro de conexión","Ha ocurrido un error con la conexión del servidor...Intente otra vez");
     //declaración de variables a utlilizar
     PanamaHitek_Arduino ino = new PanamaHitek_Arduino();
     
@@ -168,6 +172,13 @@ public class ControllerPrincipal implements Initializable{
             lblEstatusError.setText("Fallo al desconectar la conecxión");
         }
     }
+    @FXML
+    private void mostrarFechHora()
+    {
+        Date fecha = new Date();
+        DateFormat fechaHora = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        System.out.println(fechaHora.format(fecha));
+    }
     
     @FXML
     private void Resultados()
@@ -179,33 +190,37 @@ public class ControllerPrincipal implements Initializable{
         LocalDate fechaFinal=dtFinal.getValue();
         if(fechaInicio==null || fechaFinal==null)
         {
-            MensajeAlerta ms= new MensajeAlerta("Error de fecha","No has elegido una o ambas fechas...Ingrese una combinación de fechas válida");
+            MensajeAlerta ms= new MensajeAlerta("Error de fecha","No has elegido una fecha..Ingrese una combinación de fechas válida");
             ms.MostrarMensaje();
         }
         else if( fechaInicio.isBefore(fechaFinal))
         {
             try {
-                //fechaInicio es menor a la fecha2                              
-                //ResultSet rs =conn.createStatement().executeQuery("SELECT*FROM PRUEBA WHERE fecha BETWEEN '"
-                //+dtInicial.getValue().toString()+"' AND '"+dtFinal.getValue().toString()+"';" );
-                //ResultSet rs = conn.createStatement().executeQuery("SELECT * FROM PRUEBA;");
-                data=null;
-                tvTabla=null;
+                //fechaInicio es menor a la fecha2                         
+                
+                DateTimeFormatter dt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                  Statement sentencia = conn.createStatement();
-                 ResultSet resultado = sentencia.executeQuery( "SELECT * FROM PRUEBA" );
+                 System.out.println(dtInicial.getValue().format(dt));
+                 ResultSet resultado = sentencia.executeQuery( "SELECT * FROM db_humedad WHERE fecha BETWEEN '"
+                         +dtInicial.getValue().format(dt) +"' AND '"+dtFinal.getValue().format(dt)+"'");
                 while(resultado.next())
                 {
-                    data.add(new Tabla(resultado.getString("id"),resultado.getString("fecha")
-                    ,resultado.getString("hora"),resultado.getString("descripcion")));
+                   Tabla tbl = new Tabla();
+                    tbl.setId(resultado.getInt("id"));
+                    tbl.setFecha(resultado.getString("fecha"));
+                    tbl.setHora(resultado.getString("hora"));
+                    tbl.setDescripcion(resultado.getFloat("humedad"));
+                    data.add(tbl);
                                     
                 }
                 tvTabla.setItems(data);
                 //sentencia.close();
                
-                col_id.setCellValueFactory(new PropertyValueFactory("id"));
-                col_fecha.setCellValueFactory(new PropertyValueFactory("fecha"));
-                col_hora.setCellValueFactory(new PropertyValueFactory("hora"));
-                col_descripcion.setCellValueFactory(new PropertyValueFactory("descripcion"));
+                col_id.setCellValueFactory(cellData -> cellData.getValue().getTablaid().asObject());
+                col_fecha.setCellValueFactory(cellData -> cellData.getValue().getTablaFecha());
+                col_humedad.setCellValueFactory(cellData -> cellData.getValue().getTablaHumedad().asObject());
+                col_hora.setCellValueFactory(cellData -> cellData.getValue().getTablaHora());
+                
                 
             } catch (SQLException ex) 
             {
@@ -221,23 +236,27 @@ public class ControllerPrincipal implements Initializable{
         else{
                 
             try {
-                data=null;
-                tvTabla=null;
+                //data=null;
+                //tvTabla=null;
                 Statement sentencia = conn.createStatement();
-                ResultSet resultado = sentencia.executeQuery( "SELECT * FROM PRUEBA" );
+                ResultSet resultado = sentencia.executeQuery( "SELECT * FROM test" );
                 while(resultado.next())
                 {
-                    data.add(new Tabla(resultado.getString("id"),resultado.getString("fecha")
-                    ,resultado.getString("hora"),resultado.getString("descripcion")));
-                                    
+                    Tabla tbl = new Tabla();
+                    tbl.setId(resultado.getInt("id_test"));
+                    tbl.setFecha(resultado.getString("fecha"));
+                    tbl.setHora(resultado.getString("hora"));
+                    tbl.setDescripcion(resultado.getFloat("humedad"));
+                    data.add(tbl);
                 }
+                col_id.setCellValueFactory(cellData -> cellData.getValue().getTablaid().asObject());
+                col_fecha.setCellValueFactory(cellData -> cellData.getValue().getTablaFecha());
+                col_humedad.setCellValueFactory(cellData -> cellData.getValue().getTablaHumedad().asObject());
+                col_hora.setCellValueFactory(cellData -> cellData.getValue().getTablaHora());
                 tvTabla.setItems(data);
                 //sentencia.close();
                
-                col_id.setCellValueFactory(new PropertyValueFactory("id"));
-                col_fecha.setCellValueFactory(new PropertyValueFactory("fecha"));
-                col_hora.setCellValueFactory(new PropertyValueFactory("hora"));
-                col_descripcion.setCellValueFactory(new PropertyValueFactory("descripcion"));
+                
             } catch (SQLException ex) {
                
                al.MostrarMensaje();               

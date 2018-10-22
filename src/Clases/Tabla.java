@@ -5,80 +5,87 @@
  */
 package Clases;
 
+import javafx.beans.property.FloatProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleFloatProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
+
+
 /**
  *
  * @author J.Armando
  */
 public class Tabla {
     
-    private String id;
-    private String fecha;
-    private String hora;
-    private String descripcion;
+    private IntegerProperty  id;
+    private StringProperty fecha;
+    private StringProperty hora;
+    private FloatProperty humedad;
     
-    public Tabla(String id,String fecha,String hora, String descripcion)
+    public Tabla()
     {
-        this.id=id;
-        this.fecha=fecha;
-        this.hora=hora;
-        this.descripcion=descripcion;
+        this.id=new SimpleIntegerProperty();
+        this.fecha=new SimpleStringProperty();
+        this.hora=new SimpleStringProperty();
+        this.humedad=new SimpleFloatProperty();
     }
 
-    /**
-     * @return the id
-     */
-    public String getId() {
-        return id;
+    
+    public int getId() {
+        return id.get();
     }
 
-    /**
-     * @param id the id to set
-     */
-    public void setId(String id) {
-        this.id = id;
+    
+    public void setId(int id) {
+        this.id.set(id);
+    }
+    
+    public IntegerProperty getTablaid()
+    {
+        return this.id;
     }
 
-    /**
-     * @return the fecha
-     */
+    
     public String getFecha() {
-        return fecha;
+        return fecha.get();
     }
 
-    /**
-     * @param fecha the fecha to set
-     */
+   
     public void setFecha(String fecha) {
-        this.fecha = fecha;
+        this.fecha.set(fecha);
     }
 
-    /**
-     * @return the hora
-     */
+   public StringProperty getTablaFecha()
+    {
+        return this.fecha;
+    }
     public String getHora() {
+        return hora.get();
+    }
+
+    
+    public void setHora(String hora) {
+        this.hora.set(hora);
+    }
+
+    public StringProperty getTablaHora()
+    {
         return hora;
     }
-
-    /**
-     * @param hora the hora to set
-     */
-    public void setHora(String hora) {
-        this.hora = hora;
+    public float getDescripcion() {
+        return humedad.get();
     }
 
-    /**
-     * @return the descripcion
-     */
-    public String getDescripcion() {
-        return descripcion;
+    
+    public void setDescripcion(float humedad) {
+        this.humedad.set(humedad);
     }
 
-    /**
-     * @param descripcion the descripcion to set
-     */
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
+    public FloatProperty getTablaHumedad()
+    {
+        return this.humedad;
     }
-
- 
 }
