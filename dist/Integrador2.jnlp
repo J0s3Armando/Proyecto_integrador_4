@@ -8,7 +8,7 @@
   </information>
   <resources>
     <j2se version="1.6+" href="http://java.sun.com/products/autodl/j2se"/>
-    <jar href="Integrador2.jar" size="11465" download="eager" />
+    <jar href="Integrador2.jar" size="11980" download="eager" />
     <jar href="lib\PanamaHitek_Arduino-3.0.0.jar" size="197798" download="eager" />
     <jar href="lib\ojdbc6.jar" size="1988051" download="eager" />
   </resources>

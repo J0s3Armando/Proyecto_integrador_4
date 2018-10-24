@@ -23,14 +23,16 @@ public class Tabla {
     private IntegerProperty  id;
     private StringProperty fecha;
     private StringProperty hora;
-    private FloatProperty humedad;
+    private IntegerProperty humedad;
+    private FloatProperty consumoAgua;
     
     public Tabla()
     {
         this.id=new SimpleIntegerProperty();
         this.fecha=new SimpleStringProperty();
         this.hora=new SimpleStringProperty();
-        this.humedad=new SimpleFloatProperty();
+        this.humedad=new SimpleIntegerProperty();
+        this.consumoAgua=new SimpleFloatProperty();
     }
 
     
@@ -75,17 +77,31 @@ public class Tabla {
     {
         return hora;
     }
-    public float getDescripcion() {
+    public int getHumedad() {
         return humedad.get();
     }
 
     
-    public void setDescripcion(float humedad) {
+    public void setHumedad(int humedad) {
         this.humedad.set(humedad);
     }
 
-    public FloatProperty getTablaHumedad()
+    public IntegerProperty getTablaHumedad()
     {
         return this.humedad;
     }
+    public float getConsumoAgua() {
+        return consumoAgua.get();
+    }
+
+    
+    public void setConsumoAgua(float consumo) {
+        this.consumoAgua.set(consumo);
+    }
+
+    public FloatProperty getTablaConsumoAgua()
+    {
+        return this.consumoAgua;
+    }
+    
 }

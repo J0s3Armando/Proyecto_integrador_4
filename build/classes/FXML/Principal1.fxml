@@ -75,10 +75,11 @@
                               </HBox>
                               <TableView fx:id="tvTabla" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                                  <columns>
-                                    <TableColumn fx:id="col_id" prefWidth="75.0" text="id" />
-                                    <TableColumn fx:id="col_fecha" prefWidth="116.0" text="Fecha" />
-                                    <TableColumn fx:id="col_hora" prefWidth="100.0" text="Hora" />
+                                    <TableColumn fx:id="col_id" prefWidth="64.0" text="id" />
+                                    <TableColumn fx:id="col_fecha" prefWidth="153.0" text="Fecha" />
+                                    <TableColumn fx:id="col_hora" prefWidth="124.0" text="Hora" />
                                     <TableColumn fx:id="col_humedad" prefWidth="140.0" text="Humedad" />
+                                    <TableColumn fx:id="col_consumoAgua" prefWidth="137.0" text="Consumo de agua (lts)" />
                                  </columns></TableView>
                            </children></VBox>
                      </center></BorderPane>
@@ -103,7 +104,7 @@
                                     <Label text=" - A - " />
                                     <DatePicker promptText="Elige una fecha" />
                                     <ComboBox fx:id="cbxTiempo" prefWidth="150.0" promptText="Tiempo" />
-                                    <Button fx:id="btnGraficar" mnemonicParsing="false" onAction="#mostrarFechHora" text="Graficar" />
+                                    <Button fx:id="btnGraficar" mnemonicParsing="false" text="Graficar" />
                                  </children>
                               </HBox>
                               <LineChart fx:id="lcGrafica" title="Humedad " VBox.vgrow="ALWAYS">
