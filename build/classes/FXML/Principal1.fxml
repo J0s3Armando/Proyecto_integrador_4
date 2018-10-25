@@ -8,7 +8,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="401.0" prefWidth="619.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.ControllerPrincipal">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="472.0" prefWidth="762.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.ControllerPrincipal">
    <center>
       <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
         <tabs>
@@ -70,6 +70,13 @@
                                        </font>
                                     </Label>
                                     <DatePicker fx:id="dtFinal" promptText="Elige una fecha" />
+                                    <Label text="Humedad : ">
+                                       <font>
+                                          <Font size="14.0" />
+                                       </font>
+                                    </Label>
+                                    <ComboBox fx:id="cbxSimbolo" prefHeight="25.0" prefWidth="88.0" promptText="Símbolo" />
+                                    <ComboBox fx:id="cbxHumedad" prefHeight="25.0" prefWidth="123.0" promptText="\% de humedad" />
                                     <Button fx:id="btnMostrar" mnemonicParsing="false" onAction="#Resultados" text="Mostrar" />
                                  </children>
                               </HBox>
@@ -78,7 +85,7 @@
                                     <TableColumn fx:id="col_id" prefWidth="64.0" text="id" />
                                     <TableColumn fx:id="col_fecha" prefWidth="153.0" text="Fecha" />
                                     <TableColumn fx:id="col_hora" prefWidth="124.0" text="Hora" />
-                                    <TableColumn fx:id="col_humedad" prefWidth="140.0" text="Humedad" />
+                                    <TableColumn fx:id="col_humedad" prefWidth="140.0" text="Humedad (%)" />
                                     <TableColumn fx:id="col_consumoAgua" prefWidth="137.0" text="Consumo de agua (lts)" />
                                  </columns></TableView>
                            </children></VBox>
@@ -89,7 +96,7 @@
                <content>
                   <BorderPane prefHeight="200.0" prefWidth="200.0">
                      <top>
-                        <Label text="Humedad del suelo" BorderPane.alignment="CENTER">
+                        <Label text="Visuliza tus datos" BorderPane.alignment="CENTER">
                            <font>
                               <Font size="18.0" />
                            </font>
@@ -98,16 +105,17 @@
                      <center>
                         <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
                            <children>
-                              <HBox alignment="CENTER" prefHeight="78.0" prefWidth="619.0" spacing="5.0">
+                              <HBox alignment="CENTER" prefHeight="78.0" prefWidth="619.0" spacing="3.0">
                                  <children>
                                     <DatePicker promptText="Elige una fecha" />
                                     <Label text=" - A - " />
                                     <DatePicker promptText="Elige una fecha" />
+                                    <ComboBox fx:id="cbxSensor" prefWidth="150.0" promptText="Sensor" />
                                     <ComboBox fx:id="cbxTiempo" prefWidth="150.0" promptText="Tiempo" />
                                     <Button fx:id="btnGraficar" mnemonicParsing="false" text="Graficar" />
                                  </children>
                               </HBox>
-                              <LineChart fx:id="lcGrafica" title="Humedad " VBox.vgrow="ALWAYS">
+                              <LineChart fx:id="lcGrafica" VBox.vgrow="ALWAYS">
                                 <xAxis>
                                   <CategoryAxis side="BOTTOM" />
                                 </xAxis>

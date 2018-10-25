@@ -52,7 +52,6 @@ public class ControllerPrincipal implements Initializable{
 
     @FXML
     private Button btnMostrar;
-
     @FXML
     private ComboBox<String> cbxTiempo;
     @FXML
@@ -71,6 +70,8 @@ public class ControllerPrincipal implements Initializable{
     private TextArea txtVista;
     @FXML
     private Button btnGraficar;
+    @FXML
+    private ComboBox<String> cbxHumedad;
     
     //para el llenado de las tablas en la base de datos
     @FXML
@@ -85,12 +86,19 @@ public class ControllerPrincipal implements Initializable{
     private TableColumn<Tabla, Integer> col_humedad;
     @FXML
     private TableColumn<Tabla, Float> col_consumoAgua;
-    MensajeAlerta al = new MensajeAlerta("Erro de conexión","Ha ocurrido un error con la conexión del servidor...Intente otra vez");
+    @FXML
+    private ComboBox<String> cbxSimbolo;
+    @FXML
+    private ComboBox<String> cbxSensor;
+    MensajeAlerta al = new MensajeAlerta("Error de conexión","Ha ocurrido un error con la conexión del servidor...Intente otra vez");
     //declaración de variables a utlilizar
     PanamaHitek_Arduino ino = new PanamaHitek_Arduino();
     
     ObservableList<String> ls =null;
     ObservableList<String> time= FXCollections.observableArrayList("1 hora","2 horas", "5 horas","1 día");
+    ObservableList<String> simbolo = FXCollections.observableArrayList("=",">","<",">=","<=");
+    ObservableList<String> sensores = FXCollections.observableArrayList("Humedad","Consumo de agua");
+    ObservableList<String> cantidad_humedad = FXCollections.observableArrayList("0","10","20","30","40","50","60","70","80","90","100");
     ObservableList<Tabla> data = FXCollections.observableArrayList();
     //CONEXION DE LA BASE DE DATOS
     Connection conn =null;
@@ -200,14 +208,23 @@ public class ControllerPrincipal implements Initializable{
         String hora=sdf.format(now);
         return(hora);
     }
-    
+    @FXML
+    private void Prueba()
+    {
+        String pruebaSimbolo=cbxSimbolo.getValue();
+        String pruebaHumedad=cbxHumedad.getValue();
+        System.out.println(pruebaSimbolo);
+        System.out.println(pruebaHumedad);
+    }
     private void solicitudQuery()
     {
        try {
-                //fechaInicio es menor a la fecha2                                        
+                //fechaInicio es menor a la fecha2     
+                String simbo =cbxSimbolo.getValue();
+                String valor =cbxHumedad.getValue();
                 DateTimeFormatter dt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                  Statement sentencia = conn.createStatement();
-                 String query="SELECT*FROM prueba_humedad WHERE fecha BETWEEN "
+                 String query="SELECT*FROM prueba_humedad WHERE humedad "+simbo+valor+" AND fecha BETWEEN "
                  + "TO_DATE('"+dtInicial.getValue().format(dt)+" 00:00:00','dd/mm/yyyy hh24:mi:ss')"
                  +" AND TO_DATE('"+dtFinal.getValue().format(dt)+" 23:00:00','dd/mm/yyyy hh24:mi:ss')";
                  ResultSet resultado = sentencia.executeQuery(query);
@@ -240,9 +257,9 @@ public class ControllerPrincipal implements Initializable{
     {
         LocalDate fechaInicio= dtInicial.getValue();
         LocalDate fechaFinal=dtFinal.getValue();
-        if(fechaInicio==null || fechaFinal==null)
+        if((fechaInicio==null || fechaFinal==null) || (cbxSimbolo.getValue()==null ||cbxHumedad.getValue()==null))
         {
-            MensajeAlerta ms= new MensajeAlerta("Error de fecha","No has elegido una fecha..Ingrese una combinación de fechas válida");
+            MensajeAlerta ms= new MensajeAlerta("Error!!","No has has seleccionado todas las opciones...");
             ms.MostrarMensaje();
         }
         else if( fechaInicio.isBefore(fechaFinal))
@@ -274,6 +291,8 @@ public class ControllerPrincipal implements Initializable{
             Logger.getLogger(ControllerPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         }
         cbxTiempo.itemsProperty().setValue(time);
-        
+        cbxHumedad.itemsProperty().setValue(cantidad_humedad);
+        cbxSensor.itemsProperty().setValue(sensores);
+        cbxSimbolo.itemsProperty().setValue(simbolo);
     }
 }
