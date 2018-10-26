@@ -21,17 +21,21 @@ import javafx.beans.property.StringProperty;
 public class Tabla {
     
     private IntegerProperty  id;
+    private IntegerProperty id_plantas;
     private StringProperty fecha;
     private StringProperty hora;
     private IntegerProperty humedad;
+    private FloatProperty caudal;
     private FloatProperty consumoAgua;
     
     public Tabla()
     {
         this.id=new SimpleIntegerProperty();
+        this.id_plantas=new SimpleIntegerProperty();
         this.fecha=new SimpleStringProperty();
         this.hora=new SimpleStringProperty();
         this.humedad=new SimpleIntegerProperty();
+        this.caudal=new SimpleFloatProperty();
         this.consumoAgua=new SimpleFloatProperty();
     }
 
@@ -50,7 +54,19 @@ public class Tabla {
         return this.id;
     }
 
+    public int getId_plantas() {
+        return id_plantas.get();
+    }
+
     
+    public void setId_plantas(int id_plantas) {
+        this.id_plantas.set(id_plantas);
+    }
+    
+    public IntegerProperty getTablaid_plantas()
+    {
+        return this.id_plantas;
+    }
     public String getFecha() {
         return fecha.get();
     }
@@ -90,10 +106,24 @@ public class Tabla {
     {
         return this.humedad;
     }
+    
+    public float getCaudal()
+    {
+        return caudal.get();
+    }
+    
+    public void setCaudal(float caudal)
+    {
+      this.caudal.set(caudal);
+    }
+    
+    public FloatProperty getTablaCaudal()
+    {
+        return this.caudal;
+    }
     public float getConsumoAgua() {
         return consumoAgua.get();
     }
-
     
     public void setConsumoAgua(float consumo) {
         this.consumoAgua.set(consumo);

@@ -8,7 +8,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="472.0" prefWidth="762.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.ControllerPrincipal">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="783.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.ControllerPrincipal">
    <center>
       <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
         <tabs>
@@ -83,10 +83,12 @@
                               <TableView fx:id="tvTabla" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                                  <columns>
                                     <TableColumn fx:id="col_id" prefWidth="64.0" text="id" />
+                                    <TableColumn fx:id="col_planta" prefWidth="75.0" text="Planta" />
                                     <TableColumn fx:id="col_fecha" prefWidth="153.0" text="Fecha" />
                                     <TableColumn fx:id="col_hora" prefWidth="124.0" text="Hora" />
                                     <TableColumn fx:id="col_humedad" prefWidth="140.0" text="Humedad (%)" />
-                                    <TableColumn fx:id="col_consumoAgua" prefWidth="137.0" text="Consumo de agua (lts)" />
+                                    <TableColumn fx:id="col_caudal" prefWidth="79.0" text="Caudal (ml)" />
+                                    <TableColumn fx:id="col_consumoAgua" prefWidth="133.0" text="Consumo de agua (ml)" />
                                  </columns></TableView>
                            </children></VBox>
                      </center></BorderPane>

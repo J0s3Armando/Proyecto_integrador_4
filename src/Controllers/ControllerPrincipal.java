@@ -26,6 +26,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.chart.LineChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
@@ -56,22 +57,20 @@ public class ControllerPrincipal implements Initializable{
     private ComboBox<String> cbxTiempo;
     @FXML
     private Label lblEstatusError;
-
     @FXML
     private Button btnDesconectar;
-
     @FXML
     private Label lblEstatus;
-
     @FXML
     private DatePicker dtFinal;
-
     @FXML
     private TextArea txtVista;
     @FXML
     private Button btnGraficar;
     @FXML
     private ComboBox<String> cbxHumedad;
+     @FXML
+    private LineChart<String,Integer> lcGrafica;
     
     //para el llenado de las tablas en la base de datos
     @FXML
@@ -79,11 +78,15 @@ public class ControllerPrincipal implements Initializable{
     @FXML
     private TableColumn<Tabla, Integer> col_id;
     @FXML
+    private TableColumn<Tabla, Integer> col_planta;
+    @FXML
     private TableColumn<Tabla, String> col_fecha;
     @FXML
     private TableColumn<Tabla, String> col_hora;
     @FXML
     private TableColumn<Tabla, Integer> col_humedad;
+    @FXML
+    private TableColumn<Tabla, Float> col_caudal;
     @FXML
     private TableColumn<Tabla, Float> col_consumoAgua;
     @FXML
@@ -128,19 +131,22 @@ public class ControllerPrincipal implements Initializable{
     {
         //divido el mesajejen en dos parte para poder hacer el insert en la tabla
         String[] cadena = msg.split(",");
-        String part1 =cadena[0];
-        String part2 = cadena[1];
+        String planta =cadena[0];
+        String humedad = cadena[1];
+        String caudal = cadena[2];
+        String consumo = cadena[3];
         try {
-            String query ="INSERT INTO prueba_humedad VALUES (id_pruebaHumedad.nextval,"
-            + "TO_DATE('"+mostrarFechaHora()+"','"+"dd/mm/yyyy hh24:mi:ss'),'"+mostrarHora()
-            +"',"+part1+","+part2+")";
+            String query ="INSERT INTO sensores VALUES (id_sensores.nextval,"+planta
+            +",TO_DATE('"+mostrarFechaHora()+"','dd/mm/yyyy hh24:mi:ss'),'"+mostrarHora()+"',"
+            +humedad+","+caudal+","+consumo+")";
             PreparedStatement s = conn.prepareStatement(query);
             s.execute();//se hace un commit automaticamente al ejecutar la sentencia
             
         } catch (SQLException ex) {
             MensajeAlerta alert = new MensajeAlerta("Error","Ha ocurrido una falla al insertar el dato...Verifique la conexión.");
+            alert.MostrarMensaje();
         }
-        txtVista.appendText("Humedad del suelo: "+part1+", consumo de agua: "+part2+" litros/s"+"\n");
+        txtVista.appendText("planta : "+planta+" ,humedad(%) : "+humedad+" ,caudal de agua(ml) : "+caudal+" ,sonsumo de agua(ml) : "+consumo+"\n");
     }
     
     private void MostrarPuertos() //muestra los puertos conectados
@@ -208,14 +214,7 @@ public class ControllerPrincipal implements Initializable{
         String hora=sdf.format(now);
         return(hora);
     }
-    @FXML
-    private void Prueba()
-    {
-        String pruebaSimbolo=cbxSimbolo.getValue();
-        String pruebaHumedad=cbxHumedad.getValue();
-        System.out.println(pruebaSimbolo);
-        System.out.println(pruebaHumedad);
-    }
+    
     private void solicitudQuery()
     {
        try {
@@ -224,7 +223,7 @@ public class ControllerPrincipal implements Initializable{
                 String valor =cbxHumedad.getValue();
                 DateTimeFormatter dt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                  Statement sentencia = conn.createStatement();
-                 String query="SELECT*FROM prueba_humedad WHERE humedad "+simbo+valor+" AND fecha BETWEEN "
+                 String query="SELECT*FROM sensores WHERE humedad "+simbo+valor+" AND fecha BETWEEN "
                  + "TO_DATE('"+dtInicial.getValue().format(dt)+" 00:00:00','dd/mm/yyyy hh24:mi:ss')"
                  +" AND TO_DATE('"+dtFinal.getValue().format(dt)+" 23:00:00','dd/mm/yyyy hh24:mi:ss')";
                  ResultSet resultado = sentencia.executeQuery(query);
@@ -232,19 +231,23 @@ public class ControllerPrincipal implements Initializable{
                 while(resultado.next())
                 {
                    Tabla tbl = new Tabla();
-                    tbl.setId(resultado.getInt("id_pruebaHumedad"));
+                    tbl.setId(resultado.getInt("id_sensores"));
+                    tbl.setId_plantas(resultado.getInt("id_plantas"));
                     tbl.setFecha(resultado.getString("fecha"));
                     tbl.setHora(resultado.getString("hora"));
                     tbl.setHumedad(resultado.getInt("humedad"));
+                    tbl.setCaudal(resultado.getFloat("caudal_agua"));
                     tbl.setConsumoAgua(resultado.getFloat("consumo_agua"));
                     data.add(tbl);                                   
                 }
                 tvTabla.setItems(data);
                //se hace referencia en que parte se obtiene la informacion para mostrarla en el tableview
                 col_id.setCellValueFactory(cellData -> cellData.getValue().getTablaid().asObject());
+                col_planta.setCellValueFactory(cellData -> cellData.getValue().getTablaid_plantas().asObject());
                 col_fecha.setCellValueFactory(cellData -> cellData.getValue().getTablaFecha());
                 col_humedad.setCellValueFactory(cellData -> cellData.getValue().getTablaHumedad().asObject());
                 col_hora.setCellValueFactory(cellData -> cellData.getValue().getTablaHora());
+                col_caudal.setCellValueFactory(cellData -> cellData.getValue().getTablaCaudal().asObject());
                 col_consumoAgua.setCellValueFactory(cellData -> cellData.getValue().getTablaConsumoAgua().asObject());               
             } catch (SQLException ex) 
             {
