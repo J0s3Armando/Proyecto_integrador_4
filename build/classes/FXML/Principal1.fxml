@@ -34,9 +34,11 @@
                                  <children>
                                     <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="12.0">
                                        <children>
-                                          <ComboBox fx:id="cbCaja" prefWidth="150.0" promptText="Puertos" />
+                                          <ComboBox fx:id="cbCaja" onAction="#selectPuertoCom" prefWidth="150.0" promptText="Puertos" />
                                           <Button fx:id="btnConectar" mnemonicParsing="false" onAction="#ConectarArduino" text="Conectar" />
                                           <Button fx:id="btnDesconectar" mnemonicParsing="false" onAction="#DesconectarArduino" text="Desconectar" />
+                                          <Button fx:id="btnEncenderSensores" mnemonicParsing="false" onAction="#encenderSensor" text="Encender sensores" />
+                                          <Button fx:id="btnApagarSensores" mnemonicParsing="false" onAction="#apagarSensor" text="Apagar sensores" />
                                        </children>
                                     </HBox>
                                  </children>
@@ -87,8 +89,8 @@
                                     <TableColumn fx:id="col_fecha" prefWidth="153.0" text="Fecha" />
                                     <TableColumn fx:id="col_hora" prefWidth="124.0" text="Hora" />
                                     <TableColumn fx:id="col_humedad" prefWidth="140.0" text="Humedad (%)" />
-                                    <TableColumn fx:id="col_caudal" prefWidth="79.0" text="Caudal" />
-                                    <TableColumn fx:id="col_consumoAgua" prefWidth="133.0" text="Consumo de agua (lts)" />
+                                    <TableColumn fx:id="col_caudal" prefWidth="79.0" text="Caudal (ml)" />
+                                    <TableColumn fx:id="col_consumoAgua" prefWidth="133.0" text="Consumo de agua (ml)" />
                                  </columns></TableView>
                            </children></VBox>
                      </center></BorderPane>
@@ -109,20 +111,21 @@
                            <children>
                               <HBox alignment="CENTER" prefHeight="78.0" prefWidth="619.0" spacing="3.0">
                                  <children>
-                                    <DatePicker promptText="Elige una fecha" />
+                                    <DatePicker fx:id="dt_fechaGrafica1" promptText="Elige una fecha" />
                                     <Label text=" - A - " />
-                                    <DatePicker promptText="Elige una fecha" />
-                                    <ComboBox fx:id="cbxSensor" prefWidth="150.0" promptText="Sensor" />
-                                    <ComboBox fx:id="cbxTiempo" prefWidth="150.0" promptText="Tiempo" />
-                                    <Button fx:id="btnGraficar" mnemonicParsing="false" text="Graficar" />
+                                    <DatePicker fx:id="dt_fechaGrafica2" promptText="Elige una fecha" />
+                                    <ComboBox fx:id="cbxSensor" onAction="#CambiarValoresGrafica" prefHeight="25.0" prefWidth="132.0" promptText="Sensor" />
+                                    <ComboBox fx:id="cbxSimboloGrafica" prefHeight="25.0" prefWidth="97.0" promptText="Símbolo" />
+                                    <ComboBox fx:id="cbxValoresGrafica" prefHeight="25.0" prefWidth="88.0" promptText="Valores" />
+                                    <Button fx:id="btnGraficar" mnemonicParsing="false" onAction="#mostrarGrafica" text="Graficar" />
                                  </children>
                               </HBox>
                               <LineChart fx:id="lcGrafica" VBox.vgrow="ALWAYS">
                                 <xAxis>
-                                  <CategoryAxis side="BOTTOM" />
+                                  <CategoryAxis fx:id="X" side="BOTTOM" />
                                 </xAxis>
                                 <yAxis>
-                                  <NumberAxis side="LEFT" />
+                                  <NumberAxis fx:id="Y" side="LEFT" />
                                 </yAxis>
                               </LineChart>
                            </children>

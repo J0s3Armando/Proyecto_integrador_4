@@ -26,7 +26,11 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Side;
+import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
@@ -70,8 +74,11 @@ public class ControllerPrincipal implements Initializable{
     @FXML
     private ComboBox<String> cbxHumedad;
      @FXML
-    private LineChart<String,Integer> lcGrafica;
-    
+    private LineChart<String,Number> lcGrafica;
+    @FXML
+    private CategoryAxis X;
+    @FXML
+    private NumberAxis Y;
     //para el llenado de las tablas en la base de datos
     @FXML
     private TableView tvTabla;
@@ -93,14 +100,26 @@ public class ControllerPrincipal implements Initializable{
     private ComboBox<String> cbxSimbolo;
     @FXML
     private ComboBox<String> cbxSensor;
+    @FXML
+    private DatePicker dt_fechaGrafica2;
+    @FXML
+    private DatePicker dt_fechaGrafica1;
+    @FXML
+    private ComboBox<String> cbxSimboloGrafica;
+    @FXML
+    private ComboBox<String> cbxValoresGrafica;
+    @FXML
+    private Button btnEncenderSensores;
+    @FXML
+    private Button btnApagarSensores;
     MensajeAlerta al = new MensajeAlerta("Error de conexión","Ha ocurrido un error con la conexión del servidor...Intente otra vez");
     //declaración de variables a utlilizar
     PanamaHitek_Arduino ino = new PanamaHitek_Arduino();
-    
+    //listas observables para ponerlos en los combobox
+    ObservableList<String> simboloGrafica= FXCollections.observableArrayList(">","<",">=","<=");    
     ObservableList<String> ls =null;
-    ObservableList<String> time= FXCollections.observableArrayList("1 hora","2 horas", "5 horas","1 día");
     ObservableList<String> simbolo = FXCollections.observableArrayList("=",">","<",">=","<=");
-    ObservableList<String> sensores = FXCollections.observableArrayList("Humedad","Consumo de agua");
+    ObservableList<String> sensores = FXCollections.observableArrayList("Humedad","Caudal de agua","Consumo de agua");
     ObservableList<String> cantidad_humedad = FXCollections.observableArrayList("0","10","20","30","40","50","60","70","80","90","100");
     ObservableList<Tabla> data = FXCollections.observableArrayList();
     //CONEXION DE LA BASE DE DATOS
@@ -135,7 +154,7 @@ public class ControllerPrincipal implements Initializable{
         String humedad = cadena[1];
         String caudal = cadena[2];
         String consumo = cadena[3];
-        try {
+        try { //se ejecuta para almacenar el dato recivido en una base de datos
             String query ="INSERT INTO sensores VALUES (id_sensores.nextval,"+planta
             +",TO_DATE('"+mostrarFechaHora()+"','dd/mm/yyyy hh24:mi:ss'),'"+mostrarHora()+"',"
             +humedad+","+caudal+","+consumo+")";
@@ -146,7 +165,7 @@ public class ControllerPrincipal implements Initializable{
             MensajeAlerta alert = new MensajeAlerta("Error","Ha ocurrido una falla al insertar el dato...Verifique la conexión.");
             alert.MostrarMensaje();
         }
-        txtVista.appendText("planta : "+planta+" ,humedad(%) : "+humedad+" ,caudal de agua(ml) : "+caudal+" ,sonsumo de agua(ml) : "+consumo+"\n");
+        txtVista.appendText("planta : "+planta+" ,humedad(%) : "+humedad+" ,caudal de agua(ml) : "+caudal+" ,consumo de agua(ml) : "+consumo+"\n");
     }
     
     private void MostrarPuertos() //muestra los puertos conectados
@@ -164,21 +183,56 @@ public class ControllerPrincipal implements Initializable{
     private void ConectarArduino(ActionEvent event) {
         try 
         {
-            ino.arduinoRX(cbCaja.getValue(), 9600, escucha);
+            ino.arduinoRXTX(cbCaja.getValue(), 9600, escucha);
             btnConectar.setDisable(true);
             btnDesconectar.setDisable(false);
+            btnEncenderSensores.setDisable(false);
+            btnApagarSensores.setDisable(true);
+            cbCaja.setDisable(true);
             lblEstatus.setText("Conectado");
-        } catch (ArduinoException ex) {
-            btnConectar.setDisable(true);
-            btnDesconectar.setDisable(false);
+        } catch (ArduinoException ex) {            
             lblEstatus.setText("Desconectado");
             lblEstatusError.setText("Fallo al conectar con arduino");
-        } catch (SerialPortException ex) {
-            
+        }
+    }
+    
+    @FXML
+    private void encenderSensor(ActionEvent e)
+    {
+        try {
+            ino.sendData("a");
             btnConectar.setDisable(true);
             btnDesconectar.setDisable(false);
-            lblEstatus.setText("Desconectado");
-            lblEstatusError.setText("Fallo del puerto serial");
+            btnEncenderSensores.setDisable(true);
+            btnApagarSensores.setDisable(false);
+            cbCaja.setDisable(true);
+            
+        } catch (ArduinoException ex) {
+            MensajeAlerta al = new MensajeAlerta("Error!!","Ha ocurrido un error al intentar encender los sensores.");
+            al.MostrarMensaje();          
+        } catch (SerialPortException ex) {
+            MensajeAlerta al = new MensajeAlerta("Error!!","Ha ocurrido un error al intentar apagar los sensores..Revise el puerto serial.");
+            al.MostrarMensaje();
+           
+        }
+    }
+    
+    @FXML
+    private void apagarSensor(ActionEvent e)
+    {
+        try {
+            ino.sendData("b");
+            btnConectar.setDisable(true);
+            btnDesconectar.setDisable(false);
+            btnEncenderSensores.setDisable(false);
+            btnApagarSensores.setDisable(true);
+            cbCaja.setDisable(true);      
+        } catch (ArduinoException ex) {
+            MensajeAlerta al = new MensajeAlerta("Error!!","Ha ocurrido un error al intentar apagar los sensores.");
+            al.MostrarMensaje();
+        } catch (SerialPortException ex) {
+           MensajeAlerta al = new MensajeAlerta("Error!!","Ha ocurrido un error al intentar apagar los sensores..Revise el puerto serial.");
+            al.MostrarMensaje();
         }
     }
 
@@ -189,6 +243,9 @@ public class ControllerPrincipal implements Initializable{
             ino.killArduinoConnection();
             btnConectar.setDisable(false);
             btnDesconectar.setDisable(true);
+            btnEncenderSensores.setDisable(true);
+            btnApagarSensores.setDisable(true);
+            cbCaja.setDisable(false);
             lblEstatus.setText("Desconectado");
         } catch (ArduinoException ex) 
         {
@@ -198,7 +255,15 @@ public class ControllerPrincipal implements Initializable{
             lblEstatusError.setText("Fallo al desconectar la conecxión");
         }
     }
-    
+    @FXML
+    private void selectPuertoCom()
+    {
+        btnConectar.setDisable(true);
+        btnDesconectar.setDisable(false);
+        btnEncenderSensores.setDisable(false);
+        btnApagarSensores.setDisable(true);
+        cbCaja.setDisable(true);
+    }
     private String mostrarFechaHora()
     {
         Date fecha = new Date();
@@ -256,7 +321,7 @@ public class ControllerPrincipal implements Initializable{
     }
     
     @FXML
-    private void Resultados()
+    private void Resultados(ActionEvent e)
     {
         LocalDate fechaInicio= dtInicial.getValue();
         LocalDate fechaFinal=dtFinal.getValue();
@@ -281,11 +346,128 @@ public class ControllerPrincipal implements Initializable{
             solicitudQuery();
         }      
     }
-
+    //==================== Codigo para mostrar la grafica =====================
+    @FXML
+    private void mostrarGrafica(ActionEvent e)
+    {      
+        LocalDate fechaInicio= dt_fechaGrafica1.getValue();
+        LocalDate fechaFinal=dt_fechaGrafica2.getValue();
+        if((fechaInicio==null || fechaFinal==null) || (cbxSimboloGrafica.getValue()==null ||cbxSensor.getValue()==null)||(cbxValoresGrafica.getValue()==null))
+        {
+            MensajeAlerta ms= new MensajeAlerta("Error!!","No has has seleccionado todas las opciones...");
+            ms.MostrarMensaje();
+        }
+        else if( fechaInicio.isBefore(fechaFinal))
+        {
+            String sensor= verSensor();
+            hacerSerie(sensor);
+            
+        }
+        else if(fechaInicio.isAfter(fechaFinal))
+        {
+            //fechaInicio es > a la primera fecha
+            MensajeAlerta mg = new MensajeAlerta("Error de fecha","La combinación de fechas debe ser cronológica o iguales...");
+            mg.MostrarMensaje();
+        }
+        else
+        {
+            String sensor= verSensor();
+            hacerSerie(sensor);
+        }   
+        
+    }
+ 
+    @FXML
+    private void CambiarValoresGrafica()
+    {      
+        //aqui ponemos los valores que puede tomas el combobox de Valores en funcion del tipo de sensor que se elija
+        switch (cbxSensor.getValue()) {
+            case "Humedad":
+               ObservableList<String> humedad= FXCollections.observableArrayList("0","10","20","30","40","50","60","70","80","90","100");
+                cbxValoresGrafica.itemsProperty().setValue(humedad);
+                break;
+            case "Caudal de agua":
+                ObservableList<String> caudal =FXCollections.observableArrayList("00.00","05.00","10.00","15.00");
+                cbxValoresGrafica.itemsProperty().setValue(caudal);
+                break;
+            default: //Consumo de agua
+               ObservableList<String> consumo =FXCollections.observableArrayList("00.00","10.00","20.00","30.00");
+               cbxValoresGrafica.itemsProperty().setValue(consumo);
+                break;
+        }
+    }
+            
+    private String verSensor()
+    {   String sensor;
+        switch (cbxSensor.getValue()) {
+            case "Humedad":
+               sensor="humedad";
+                break;
+            case "Caudal de agua":
+                sensor="caudal_agua";
+                break;
+            default: //Consumo de agua
+               sensor="consumo_agua";
+                break;
+        }
+        return sensor;
+    }
+    private void hacerSerie(String sensor)
+    {     
+        try {
+            String simbo =cbxSimboloGrafica.getValue();
+            String valor =cbxValoresGrafica.getValue();
+            DateTimeFormatter dt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            Statement sentencia = conn.createStatement();
+            String query="SELECT fecha,"+sensor+" FROM sensores WHERE "+sensor+" "+simbo+valor+" AND fecha BETWEEN "
+                    + "TO_DATE('"+dt_fechaGrafica1.getValue().format(dt)+" 00:00:00','dd/mm/yyyy hh24:mi:ss')"
+                    +" AND TO_DATE('"+dt_fechaGrafica2.getValue().format(dt)+" 23:00:00','dd/mm/yyyy hh24:mi:ss')";
+            ResultSet resultado = sentencia.executeQuery(query);
+            
+            lcGrafica.getData().clear();          
+            X.setLabel("Tiempo transcurrido año-mes-día hora(24h):min:seg"); 
+            XYChart.Series<String,Number> serie = new XYChart.Series<String,Number>();
+            switch(sensor)
+            {
+                case "humedad":
+                    while(resultado.next())
+                        {
+                            serie.getData().add(new XYChart.Data<String,Number>(resultado.getString("fecha"),resultado.getInt(sensor)));
+                        }
+                    Y.setLabel("Porcentaje de humedad");
+                    break;
+                case "caudal_agua":
+                    while(resultado.next())
+                        {
+                          serie.getData().add(new XYChart.Data<String,Number>(resultado.getString("fecha"),resultado.getFloat(sensor)));
+                        }
+                   Y.setLabel("Caudal de agua en mililitros/seg");
+                    break;
+                default:
+                    while(resultado.next())
+                        {
+                            serie.getData().add(new XYChart.Data<String,Number>(resultado.getString("fecha"),resultado.getFloat(sensor)));
+                        }
+                    Y.setLabel("Consumo de agua en mililitros/seg");
+                    break;
+            }
+            lcGrafica.setTitle(cbxSensor.getValue());
+            lcGrafica.getData().add(serie);
+            serie.setName(cbxSensor.getValue());
+            
+        } catch (SQLException ex) {
+           MensajeAlerta a = new MensajeAlerta("Error!!","Ha ocurrido un error al intentar graficar...Verifique la conexión");
+           a.MostrarMensaje();
+        }
+    }
+    //==================== los valores y propiedades que se inicializan al iniciar la app ==============
     @Override 
     public void initialize(URL location, ResourceBundle resources) {
         MostrarPuertos();
+        btnConectar.setDisable(true);
         btnDesconectar.setDisable(true);
+        btnEncenderSensores.setDisable(true);
+        btnApagarSensores.setDisable(true);        
         try {
             conn=Conexion_db.getConnection();
         } catch (ClassNotFoundException ex) {
@@ -293,7 +475,7 @@ public class ControllerPrincipal implements Initializable{
         } catch (SQLException ex) {
             Logger.getLogger(ControllerPrincipal.class.getName()).log(Level.SEVERE, null, ex);
         }
-        cbxTiempo.itemsProperty().setValue(time);
+        cbxSimboloGrafica.itemsProperty().setValue(simboloGrafica);
         cbxHumedad.itemsProperty().setValue(cantidad_humedad);
         cbxSensor.itemsProperty().setValue(sensores);
         cbxSimbolo.itemsProperty().setValue(simbolo);
