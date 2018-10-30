@@ -112,6 +112,8 @@ public class ControllerPrincipal implements Initializable{
     private Button btnEncenderSensores;
     @FXML
     private Button btnApagarSensores;
+    @FXML
+    private Button btnActualizar;
     MensajeAlerta al = new MensajeAlerta("Error de conexión","Ha ocurrido un error con la conexión del servidor...Intente otra vez");
     //declaración de variables a utlilizar
     PanamaHitek_Arduino ino = new PanamaHitek_Arduino();
@@ -173,8 +175,8 @@ public class ControllerPrincipal implements Initializable{
             MensajeAlerta alert = new MensajeAlerta("Error","Ha ocurrido una falla al insertar el dato...Verifique la conexión.");
             alert.MostrarMensaje();
         }
-        txtVista.appendText("planta : "+planta1+" ,humedad(%) : "+humedad1+" ,caudal de agua(ml) : "+caudal+" ,consumo de agua(ml) : "+consumo+"\n");
-        txtVista.appendText("planta : "+planta2+" ,humedad(%) : "+humedad2+" ,caudal de agua(ml) : "+caudal+" ,consumo de agua(ml) : "+consumo+"\n");
+        txtVista.appendText("planta : "+planta1+" ,humedad(%) : "+humedad1+" ,caudal de agua(lts/min) : "+caudal+" ,consumo de agua(lts/min) : "+consumo+"\n");
+        txtVista.appendText("planta : "+planta2+" ,humedad(%) : "+humedad2+" ,caudal de agua(lts/min) : "+caudal+" ,consumo de agua(lts/min) : "+consumo+"\n");
     }
     
     private void MostrarPuertos() //muestra los puertos conectados
@@ -193,11 +195,12 @@ public class ControllerPrincipal implements Initializable{
         try 
         {
             ino.arduinoRXTX(cbCaja.getValue().toString(), 9600, escucha);
-            //btnConectar.setDisable(true);
-            //btnDesconectar.setDisable(false);
-            //btnEncenderSensores.setDisable(false);
-            //btnApagarSensores.setDisable(true);
-            //cbCaja.setDisable(true);
+            btnConectar.setDisable(true);
+            btnDesconectar.setDisable(false);
+            btnEncenderSensores.setDisable(false);
+            btnApagarSensores.setDisable(true);
+            cbCaja.setDisable(true);
+            btnActualizar.setDisable(true);
             lblEstatus.setText("Conectado");
         } catch (ArduinoException ex) {            
             lblEstatus.setText("Desconectado");
@@ -210,6 +213,12 @@ public class ControllerPrincipal implements Initializable{
     {
         try {
             ino.sendData("a");
+            btnConectar.setDisable(true);
+            btnDesconectar.setDisable(false);
+            btnEncenderSensores.setDisable(true);
+            btnApagarSensores.setDisable(false);
+            cbCaja.setDisable(true);
+            btnActualizar.setDisable(true);
         } catch (ArduinoException ex) {
             System.out.println("error de arduino");
         } catch (SerialPortException ex) {
@@ -222,11 +231,12 @@ public class ControllerPrincipal implements Initializable{
     {
         try {
             ino.sendData("b");
-            //btnConectar.setDisable(true);
-            //btnDesconectar.setDisable(false);
-            //btnEncenderSensores.setDisable(false);
-            //btnApagarSensores.setDisable(true);
-            //cbCaja.setDisable(true);      
+            btnConectar.setDisable(true);
+            btnDesconectar.setDisable(false);
+            btnEncenderSensores.setDisable(false);
+            btnApagarSensores.setDisable(true);
+            cbCaja.setDisable(true);
+            btnActualizar.setDisable(true);
         } catch (ArduinoException ex) {
             MensajeAlerta al = new MensajeAlerta("Error!!","Ha ocurrido un error al intentar apagar los sensores.");
             al.MostrarMensaje();
@@ -241,11 +251,12 @@ public class ControllerPrincipal implements Initializable{
         try 
         {
             ino.killArduinoConnection();
-            //btnConectar.setDisable(false);
-            //btnDesconectar.setDisable(true);
-            //btnEncenderSensores.setDisable(true);
-            //btnApagarSensores.setDisable(true);
-            //cbCaja.setDisable(false);
+            btnConectar.setDisable(false);
+            btnDesconectar.setDisable(true);
+            btnEncenderSensores.setDisable(true);
+            btnApagarSensores.setDisable(true);
+            cbCaja.setDisable(false);
+            btnActualizar.setDisable(false);
             lblEstatus.setText("Desconectado");
         } catch (ArduinoException ex) 
         {
@@ -256,11 +267,12 @@ public class ControllerPrincipal implements Initializable{
     @FXML
     private void selectPuertoCom()
     {
-        //btnConectar.setDisable(false);
-        //btnDesconectar.setDisable(true);
-        //btnEncenderSensores.setDisable(true);
-        //btnApagarSensores.setDisable(true);
-        //cbCaja.setDisable(false);
+        btnConectar.setDisable(false);
+        btnDesconectar.setDisable(true);
+        btnEncenderSensores.setDisable(true);
+        btnApagarSensores.setDisable(true);
+        cbCaja.setDisable(false);
+        btnActualizar.setDisable(false);
     }
     private String mostrarFechaHora()
     {
@@ -376,7 +388,7 @@ public class ControllerPrincipal implements Initializable{
     }
  
     @FXML
-    private void CambiarValoresGrafica() //este metodo es para que los valores del combobox cbxValoresGrafica cambien en funcion de cbxSensor
+    private void CambiarValoresGrafica(ActionEvent e) //este metodo es para que los valores del combobox cbxValoresGrafica cambien en funcion de cbxSensor
     {      
         //aqui ponemos los valores que puede tomas el combobox de Valores en funcion del tipo de sensor que se elija
         switch (cbxSensor.getValue()) {
@@ -439,14 +451,14 @@ public class ControllerPrincipal implements Initializable{
                         {
                           serie.getData().add(new XYChart.Data<String,Number>(resultado.getString("fecha"),resultado.getFloat(sensor)));
                         }
-                   Y.setLabel("Caudal de agua en mililitros/seg");
+                   Y.setLabel("Caudal de agua en litros/min");
                     break;
                 default:
                     while(resultado.next())
                         {
                             serie.getData().add(new XYChart.Data<String,Number>(resultado.getString("fecha"),resultado.getFloat(sensor)));
                         }
-                    Y.setLabel("Consumo de agua en mililitros/seg");
+                    Y.setLabel("Consumo de agua en litros/min");
                     break;
             }
             lcGrafica.setTitle(cbxSensor.getValue());
@@ -458,14 +470,19 @@ public class ControllerPrincipal implements Initializable{
            a.MostrarMensaje();
         }
     }
+    @FXML
+    private void actualizarPuertos()
+    {
+        MostrarPuertos();
+    }
     //==================== los valores y propiedades que se inicializan al iniciar la app ==============
     @Override 
     public void initialize(URL location, ResourceBundle resources) {
         MostrarPuertos();
-       // btnConectar.setDisable(true);
-        //btnDesconectar.setDisable(true);
-        //btnEncenderSensores.setDisable(true);
-        //btnApagarSensores.setDisable(true);        
+        btnConectar.setDisable(true);
+        btnDesconectar.setDisable(true);
+        btnEncenderSensores.setDisable(true);
+        btnApagarSensores.setDisable(true); 
         try {
             conn=Conexion_db.getConnection();
         } catch (ClassNotFoundException ex) {

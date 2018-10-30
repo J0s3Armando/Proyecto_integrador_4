@@ -8,7 +8,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="783.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.ControllerPrincipal">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="497.0" prefWidth="815.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Controllers.ControllerPrincipal">
    <center>
       <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
         <tabs>
@@ -39,6 +39,7 @@
                                           <Button fx:id="btnDesconectar" mnemonicParsing="false" onAction="#DesconectarArduino" text="Desconectar" />
                                           <Button fx:id="btnEncenderSensores" mnemonicParsing="false" onAction="#encenderSensor" text="Encender sensores" />
                                           <Button fx:id="btnApagarSensores" mnemonicParsing="false" onAction="#apagarSensor" text="Apagar sensores" />
+                                          <Button fx:id="btnActualizar" mnemonicParsing="false" onAction="#actualizarPuertos" text="Actualizar puertos" />
                                        </children>
                                     </HBox>
                                  </children>
@@ -87,10 +88,10 @@
                                     <TableColumn fx:id="col_id" prefWidth="64.0" text="id" />
                                     <TableColumn fx:id="col_planta" prefWidth="75.0" text="Planta" />
                                     <TableColumn fx:id="col_fecha" prefWidth="153.0" text="Fecha" />
-                                    <TableColumn fx:id="col_hora" prefWidth="124.0" text="Hora" />
-                                    <TableColumn fx:id="col_humedad" prefWidth="140.0" text="Humedad (%)" />
-                                    <TableColumn fx:id="col_caudal" prefWidth="79.0" text="Caudal (ml)" />
-                                    <TableColumn fx:id="col_consumoAgua" prefWidth="133.0" text="Consumo de agua (ml)" />
+                                    <TableColumn fx:id="col_hora" prefWidth="109.0" text="Hora" />
+                                    <TableColumn fx:id="col_humedad" prefWidth="135.0" text="Humedad (%)" />
+                                    <TableColumn fx:id="col_caudal" prefWidth="115.0" text="Caudal (lts/min)" />
+                                    <TableColumn fx:id="col_consumoAgua" prefWidth="162.0" text="Consumo de agua (lts/min)" />
                                  </columns></TableView>
                            </children></VBox>
                      </center></BorderPane>
@@ -114,7 +115,7 @@
                                     <DatePicker fx:id="dt_fechaGrafica1" promptText="Elige una fecha" />
                                     <Label text=" - A - " />
                                     <DatePicker fx:id="dt_fechaGrafica2" promptText="Elige una fecha" />
-                                    <ComboBox fx:id="cbxSensor" onAction="#CambiarValoresGrafica" prefHeight="25.0" prefWidth="132.0" promptText="Sensor" />
+                                    <ComboBox fx:id="cbxSensor" onAction="#CambiarValoresGrafica" prefHeight="25.0" prefWidth="163.0" promptText="Sensor" />
                                     <ComboBox fx:id="cbxSimboloGrafica" prefHeight="25.0" prefWidth="97.0" promptText="Símbolo" />
                                     <ComboBox fx:id="cbxValoresGrafica" prefHeight="25.0" prefWidth="88.0" promptText="Valores" />
                                     <Button fx:id="btnGraficar" mnemonicParsing="false" onAction="#mostrarGrafica" text="Graficar" />
