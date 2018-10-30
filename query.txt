@@ -1,0 +1,29 @@
+se crea la primara base de datos llamada plantas
+
+CREATE TABLE plantas(
+	id_plantas INTEGER NOT NULL PRIMARY KEY,
+	planta VARCHAR(70) NOT NULL,
+	numero_sensor INTEGER NOT NULL,
+	hum_minimo INTEGER NOT NULL,
+	hum_maximo INTEGER NOT NULL
+	);
+en la tabla plantas se deben agregar dos plantas con un insert 
+se crea la segunda tabla llamada sensores
+
+CREATE TABLE sensores(
+	id_sensores INTEGER NOT NULL PRIMARY KEY,
+	id_plantas INTEGER NOT NULL,
+	fecha DATE NOT NULL,
+	hora VARCHAR(14) NOT NULL,
+	caudal_agua FLOAT NOT NULL,
+	consumo_agua FLOAT NOT NULL,
+	CONSTRAINT fk_senPlantas
+	FOREIGN KEY(id_plantas)
+	REFERENCES plantas(id_plantas)
+	);
+
+se crea una  sequencia en oracle despues de crear ambas tablas
+
+CREATE SEQUENCE id_sensores START WITH 1 INCREMENT BY 1;
+
+la sequencia creada debe ser igual a la de arriba para ser utilzada como un autoincrementador

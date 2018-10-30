@@ -150,22 +150,31 @@ public class ControllerPrincipal implements Initializable{
     {
         //divido el mesajejen en dos parte para poder hacer el insert en la tabla
         String[] cadena = msg.split(",");
-        String planta =cadena[0];
-        String humedad = cadena[1];
-        String caudal = cadena[2];
-        String consumo = cadena[3];
+        String planta1 =cadena[0];
+        String humedad1 = cadena[1];
+        String planta2 = cadena[2];
+        String humedad2 = cadena[3];
+        String caudal = cadena[4];
+        String consumo = cadena[5];
         try { //se ejecuta para almacenar el dato recivido en una base de datos
-            String query ="INSERT INTO sensores VALUES (id_sensores.nextval,"+planta
+            String query ="INSERT INTO sensores VALUES (id_sensores.nextval,"+planta1
             +",TO_DATE('"+mostrarFechaHora()+"','dd/mm/yyyy hh24:mi:ss'),'"+mostrarHora()+"',"
-            +humedad+","+caudal+","+consumo+")";
+            +humedad1+","+caudal+","+consumo+")";
             PreparedStatement s = conn.prepareStatement(query);
+            s.execute();//se hace un commit automaticamente al ejecutar la sentencia
+            
+            query ="INSERT INTO sensores VALUES (id_sensores.nextval,"+planta2
+            +",TO_DATE('"+mostrarFechaHora()+"','dd/mm/yyyy hh24:mi:ss'),'"+mostrarHora()+"',"
+            +humedad2+","+caudal+","+consumo+")";
+            s = conn.prepareStatement(query);
             s.execute();//se hace un commit automaticamente al ejecutar la sentencia
             
         } catch (SQLException ex) {
             MensajeAlerta alert = new MensajeAlerta("Error","Ha ocurrido una falla al insertar el dato...Verifique la conexión.");
             alert.MostrarMensaje();
         }
-        txtVista.appendText("planta : "+planta+" ,humedad(%) : "+humedad+" ,caudal de agua(ml) : "+caudal+" ,consumo de agua(ml) : "+consumo+"\n");
+        txtVista.appendText("planta : "+planta1+" ,humedad(%) : "+humedad1+" ,caudal de agua(ml) : "+caudal+" ,consumo de agua(ml) : "+consumo+"\n");
+        txtVista.appendText("planta : "+planta2+" ,humedad(%) : "+humedad2+" ,caudal de agua(ml) : "+caudal+" ,consumo de agua(ml) : "+consumo+"\n");
     }
     
     private void MostrarPuertos() //muestra los puertos conectados
@@ -183,12 +192,12 @@ public class ControllerPrincipal implements Initializable{
     private void ConectarArduino(ActionEvent event) {
         try 
         {
-            ino.arduinoRXTX(cbCaja.getValue(), 9600, escucha);
-            btnConectar.setDisable(true);
-            btnDesconectar.setDisable(false);
-            btnEncenderSensores.setDisable(false);
-            btnApagarSensores.setDisable(true);
-            cbCaja.setDisable(true);
+            ino.arduinoRXTX(cbCaja.getValue().toString(), 9600, escucha);
+            //btnConectar.setDisable(true);
+            //btnDesconectar.setDisable(false);
+            //btnEncenderSensores.setDisable(false);
+            //btnApagarSensores.setDisable(true);
+            //cbCaja.setDisable(true);
             lblEstatus.setText("Conectado");
         } catch (ArduinoException ex) {            
             lblEstatus.setText("Desconectado");
@@ -201,19 +210,10 @@ public class ControllerPrincipal implements Initializable{
     {
         try {
             ino.sendData("a");
-            btnConectar.setDisable(true);
-            btnDesconectar.setDisable(false);
-            btnEncenderSensores.setDisable(true);
-            btnApagarSensores.setDisable(false);
-            cbCaja.setDisable(true);
-            
         } catch (ArduinoException ex) {
-            MensajeAlerta al = new MensajeAlerta("Error!!","Ha ocurrido un error al intentar encender los sensores.");
-            al.MostrarMensaje();          
+            System.out.println("error de arduino");
         } catch (SerialPortException ex) {
-            MensajeAlerta al = new MensajeAlerta("Error!!","Ha ocurrido un error al intentar apagar los sensores..Revise el puerto serial.");
-            al.MostrarMensaje();
-           
+           System.out.println("error de puerto");
         }
     }
     
@@ -222,11 +222,11 @@ public class ControllerPrincipal implements Initializable{
     {
         try {
             ino.sendData("b");
-            btnConectar.setDisable(true);
-            btnDesconectar.setDisable(false);
-            btnEncenderSensores.setDisable(false);
-            btnApagarSensores.setDisable(true);
-            cbCaja.setDisable(true);      
+            //btnConectar.setDisable(true);
+            //btnDesconectar.setDisable(false);
+            //btnEncenderSensores.setDisable(false);
+            //btnApagarSensores.setDisable(true);
+            //cbCaja.setDisable(true);      
         } catch (ArduinoException ex) {
             MensajeAlerta al = new MensajeAlerta("Error!!","Ha ocurrido un error al intentar apagar los sensores.");
             al.MostrarMensaje();
@@ -241,16 +241,14 @@ public class ControllerPrincipal implements Initializable{
         try 
         {
             ino.killArduinoConnection();
-            btnConectar.setDisable(false);
-            btnDesconectar.setDisable(true);
-            btnEncenderSensores.setDisable(true);
-            btnApagarSensores.setDisable(true);
-            cbCaja.setDisable(false);
+            //btnConectar.setDisable(false);
+            //btnDesconectar.setDisable(true);
+            //btnEncenderSensores.setDisable(true);
+            //btnApagarSensores.setDisable(true);
+            //cbCaja.setDisable(false);
             lblEstatus.setText("Desconectado");
         } catch (ArduinoException ex) 
         {
-            btnConectar.setDisable(true);
-            btnDesconectar.setDisable(false);
             lblEstatus.setText("Conectado");
             lblEstatusError.setText("Fallo al desconectar la conecxión");
         }
@@ -258,11 +256,11 @@ public class ControllerPrincipal implements Initializable{
     @FXML
     private void selectPuertoCom()
     {
-        btnConectar.setDisable(true);
-        btnDesconectar.setDisable(false);
-        btnEncenderSensores.setDisable(false);
-        btnApagarSensores.setDisable(true);
-        cbCaja.setDisable(true);
+        //btnConectar.setDisable(false);
+        //btnDesconectar.setDisable(true);
+        //btnEncenderSensores.setDisable(true);
+        //btnApagarSensores.setDisable(true);
+        //cbCaja.setDisable(false);
     }
     private String mostrarFechaHora()
     {
@@ -279,7 +277,7 @@ public class ControllerPrincipal implements Initializable{
         String hora=sdf.format(now);
         return(hora);
     }
-    
+    //un metodo para hacer la consulta en 
     private void solicitudQuery()
     {
        try {
@@ -320,7 +318,7 @@ public class ControllerPrincipal implements Initializable{
             }  
     }
     
-    @FXML
+    @FXML // se validan todos los componentes del apartado de datos
     private void Resultados(ActionEvent e)
     {
         LocalDate fechaInicio= dtInicial.getValue();
@@ -347,7 +345,7 @@ public class ControllerPrincipal implements Initializable{
         }      
     }
     //==================== Codigo para mostrar la grafica =====================
-    @FXML
+    @FXML //aqui es validan que todos los componentes del apartado de grafica
     private void mostrarGrafica(ActionEvent e)
     {      
         LocalDate fechaInicio= dt_fechaGrafica1.getValue();
@@ -378,7 +376,7 @@ public class ControllerPrincipal implements Initializable{
     }
  
     @FXML
-    private void CambiarValoresGrafica()
+    private void CambiarValoresGrafica() //este metodo es para que los valores del combobox cbxValoresGrafica cambien en funcion de cbxSensor
     {      
         //aqui ponemos los valores que puede tomas el combobox de Valores en funcion del tipo de sensor que se elija
         switch (cbxSensor.getValue()) {
@@ -397,7 +395,7 @@ public class ControllerPrincipal implements Initializable{
         }
     }
             
-    private String verSensor()
+    private String verSensor() //este metodo es para enviar a la db la tabla que se va a mostrar en funcion de cbxSensor
     {   String sensor;
         switch (cbxSensor.getValue()) {
             case "Humedad":
@@ -412,7 +410,7 @@ public class ControllerPrincipal implements Initializable{
         }
         return sensor;
     }
-    private void hacerSerie(String sensor)
+    private void hacerSerie(String sensor) //aqui es donde se solicita a la base de datos la info para graficarla
     {     
         try {
             String simbo =cbxSimboloGrafica.getValue();
@@ -464,16 +462,16 @@ public class ControllerPrincipal implements Initializable{
     @Override 
     public void initialize(URL location, ResourceBundle resources) {
         MostrarPuertos();
-        btnConectar.setDisable(true);
-        btnDesconectar.setDisable(true);
-        btnEncenderSensores.setDisable(true);
-        btnApagarSensores.setDisable(true);        
+       // btnConectar.setDisable(true);
+        //btnDesconectar.setDisable(true);
+        //btnEncenderSensores.setDisable(true);
+        //btnApagarSensores.setDisable(true);        
         try {
             conn=Conexion_db.getConnection();
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(ControllerPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("error de la base de datos");
         } catch (SQLException ex) {
-            Logger.getLogger(ControllerPrincipal.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("error de la base de query");
         }
         cbxSimboloGrafica.itemsProperty().setValue(simboloGrafica);
         cbxHumedad.itemsProperty().setValue(cantidad_humedad);
